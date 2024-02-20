@@ -8,3 +8,6 @@ class Menu(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String)
+
+    def __repr__(self):
+        return f"Menu({self.__dict__})"
