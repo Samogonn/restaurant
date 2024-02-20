@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
+import uvicorn
 
 from app import schemas, models, crud
 from app.database import sync_sesion, engine
@@ -8,6 +9,10 @@ from app.database import sync_sesion, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+def start():
+    uvicorn.run("app.main:app", reload=True)
 
 
 # Dependency
