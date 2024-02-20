@@ -34,3 +34,16 @@ def get_all_menus(session: Session = Depends(get_session)):
 def add_menu(menu: Annotated[schemas.MenuCreate, Depends()], session: Session = Depends(get_session)):
     db_menu = crud.SqlAlchemyCRUD(session).add(menu)
     return db_menu
+
+
+@app.patch("/menu/{id}")
+def update_menu(id: int, menu: schemas.MenuUpdate, session: Session = Depends(get_session)):
+    db_menu = crud.SqlAlchemyCRUD(session).update(id, menu)
+    return db_menu
+
+
+@app.delete("/menu/{id}")
+def remove_menu(id: int, session: Session = Depends(get_session)):
+    db_menu = crud.SqlAlchemyCRUD(session).get(id)
+    db_menu = crud.SqlAlchemyCRUD(session).remove(db_menu)
+    return db_menu

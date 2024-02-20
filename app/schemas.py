@@ -10,5 +10,9 @@ class MenuCreate(MenuBase):
     pass
 
 
-class DBMenu(BaseModel):
+class MenuUpdate(MenuBase):
+    name: str | None
+
+
+class MenuDB(BaseModel):
     id: int
