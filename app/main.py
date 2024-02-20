@@ -32,14 +32,16 @@ def get_all_menus(session: Session = Depends(get_session)):
     return crud.SqlAlchemyCRUD(session).get_all()
 
 
-@app.post("/menu")
+@app.post("/menu", status_code=status.HTTP_201_CREATED)
 def add_menu(menu: Annotated[schemas.MenuCreate, Depends()], session: Session = Depends(get_session)):
     db_menu = crud.SqlAlchemyCRUD(session).add(menu)
     return db_menu
 
 
 @app.patch("/menu/{id}")
-def update_menu(id: int, menu: schemas.MenuUpdate, session: Session = Depends(get_session)):
+def update_menu(
+    id: int, menu: Annotated[schemas.MenuUpdate, Depends()], session: Session = Depends(get_session)
+):
     db_menu = crud.SqlAlchemyCRUD(session).get(id)
     if db_menu is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
