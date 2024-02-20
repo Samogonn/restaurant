@@ -7,6 +7,7 @@
 1. Clone repository:
     ```
     git clone https://github.com/Samogonn/restaurant.git
+    cd restaurant/
     ```
 2. Install dependencies and activate virtual environment:
     ```
@@ -19,3 +20,5 @@
     ```
     uvicorn app.main:app --reload
     ```
+Documentation is available here:
+http://127.0.0.1:8000/docs
