@@ -1,4 +1,5 @@
 import abc
+from sqlalchemy import select, update
 
 from sqlalchemy.orm import Session
 
@@ -6,10 +7,6 @@ from app import models, schemas
 
 
 class AbstractCRUD[T](abc.ABC):
-    @abc.abstractmethod
-    def add(self, **kwargs: object) -> None:
-        raise NotImplementedError
-
     @abc.abstractmethod
     def get(self, id: int) -> T:
         raise NotImplementedError
@@ -19,15 +16,71 @@ class AbstractCRUD[T](abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove(self, id: int) -> None:
+    def add(self, **kwargs: object) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
     def update(self, id: int, **kwargs: object) -> None:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def remove(self, id: int) -> None:
+        raise NotImplementedError
+
+
+class SqlAlchemyCRUDBase(AbstractCRUD):
+    """
+    Main CRUD
+    """
+
+    def __init__(self, model) -> None:
+        self.model = model
+
+    def get(self, id: int, session: Session):
+        db_obj = (
+            session.execute(select(self.model).where(self.model.id == id))
+            .scalars()
+            .first()
+        )
+        return db_obj
+
+    def get_all(self, session: Session):
+        all_objs = session.execute(select(self.model)).scalars().all()
+        return all_objs
+
+    def add(self, obj, session: Session):
+        obj = obj.model_dump()
+        db_obj = self.model(obj)
+        session.add(db_obj)
+        session.commit()
+        session.refresh(db_obj)
+        return db_obj
+
+    def update(self, id, obj, session: Session):
+        session.execute(
+            update(self.model)
+            .where(self.model.id == id)
+            .values(obj.model_dump())
+        )
+        session.commit()
+        return obj
+
+    def remove(self, id: int, session: Session):
+        db_obj = (
+            session.execute(select(self.model).where(self.model.id == id))
+            .scalars()
+            .first()
+        )
+        session.delete(db_obj)
+        session.commit()
+        return db_obj
+
 
 class SqlAlchemyMenuCRUD(AbstractCRUD[models.Menu]):
+    """
+    CRUD for practice
+    """
+
     def __init__(self, session: Session) -> None:
         self.session = session
 
@@ -81,3 +134,6 @@ class MockMenuCRUD(AbstractCRUD[models.Menu]):
 
     def update(self, id: int, menu: schemas.MenuUpdate) -> None:
         self.menus[id] = menu
+
+
+menu_crud = SqlAlchemyCRUDBase(models.Menu)
