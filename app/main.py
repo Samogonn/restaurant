@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
-from app.database import engine, sync_sesion
+from app.database import engine, sync_session
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -18,7 +18,7 @@ def start():
 
 # Dependency
 def get_session():
-    db = sync_sesion()
+    db = sync_session()
     try:
         yield db
     finally:

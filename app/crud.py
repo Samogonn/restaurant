@@ -50,7 +50,7 @@ class SqlAlchemyCRUDBase(AbstractCRUD):
 
     def add(self, obj, session: Session):
         obj = obj.model_dump()
-        db_obj = self.model(obj)
+        db_obj = self.model(**obj)
         session.add(db_obj)
         session.commit()
         session.refresh(db_obj)

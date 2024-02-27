@@ -1,11 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
 
-client = TestClient(app)
-
-
-def test_get_menu():
+def test_get_menu(client: TestClient):
     response = client.get("/menu/3")
     assert response.status_code == 200
     assert response.json() == {
@@ -15,19 +11,19 @@ def test_get_menu():
     }
 
 
-def test_get_inexistent_menu():
+def test_get_inexistent_menu(client: TestClient):
     response = client.get("/menu/99")
     assert response.status_code == 404
     assert response.json() == {"detail": "Not Found"}
 
 
-def test_create_menu():
+def test_create_menu(client: TestClient):
     menu = {"description": "Never spicy taco", "name": "Dragon's Tacos"}
     response = client.post("/menu", params=menu)
     assert response.status_code == 201
 
 
-def test_get_all_menus():
+def test_get_all_menus(client: TestClient):
     response = client.get("/menu")
     assert response.status_code == 200
     assert response.json() == [
@@ -41,7 +37,7 @@ def test_get_all_menus():
     ]
 
 
-def test_update_menu():
+def test_update_menu(client: TestClient):
     id = 4
     menu = {
         "description": "Always spicy taco",
@@ -71,7 +67,7 @@ def test_update_menu():
     ]
 
 
-def test_remove_menu():
+def test_remove_menu(client: TestClient):
     id = 4
     response = client.delete(f"/menu/{id}")
     assert response.status_code == 200
@@ -92,7 +88,7 @@ def test_remove_menu():
     ]
 
 
-def test_remove_inexistent_menu():
+def test_remove_inexistent_menu(client: TestClient):
     id = 4
     response = client.delete(f"/menu/{id}")
     assert response.status_code == 404
