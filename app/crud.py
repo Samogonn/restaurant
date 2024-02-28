@@ -1,6 +1,7 @@
 import abc
-from sqlalchemy import select, update
 
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -48,22 +49,29 @@ class SqlAlchemyCRUDBase(AbstractCRUD):
         all_objs = session.execute(select(self.model)).scalars().all()
         return all_objs
 
-    def add(self, obj, session: Session):
-        obj = obj.model_dump()
-        db_obj = self.model(**obj)
+    def add(self, obj_in, session: Session):
+        obj_in = obj_in.model_dump()
+        db_obj = self.model(**obj_in)
         session.add(db_obj)
         session.commit()
         session.refresh(db_obj)
         return db_obj
 
-    def update(self, id, obj, session: Session):
-        session.execute(
-            update(self.model)
-            .where(self.model.id == id)
-            .values(obj.model_dump())
-        )
+    def update(self, db_obj, obj_in, session: Session):
+        obj_data = jsonable_encoder(db_obj)
+
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.model_dump(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+
+        session.add(db_obj)
         session.commit()
-        return obj
+        session.refresh(db_obj)
+        return db_obj
 
     def remove(self, id: int, session: Session):
         db_obj = (

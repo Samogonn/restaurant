@@ -56,7 +56,7 @@ def update_menu(
     db_menu = crud.menu_crud.get(id, session)
     if db_menu is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    crud.menu_crud.update(id, menu, session)
+    db_menu = crud.menu_crud.update(db_menu, menu, session)
     return db_menu
 
 
