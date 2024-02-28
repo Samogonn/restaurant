@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "restaurant"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Samogonn <solovevym@gmail.com>"]
@@ -17,3 +17,6 @@ httpx = "^0.26.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "app.main:start"
