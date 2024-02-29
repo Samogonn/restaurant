@@ -43,6 +43,7 @@ class SqlAlchemyCRUDBase(AbstractCRUD):
             .scalars()
             .first()
         )
+        print(db_obj)  # TODO remove it
         return db_obj
 
     def get_all(self, session: Session):
